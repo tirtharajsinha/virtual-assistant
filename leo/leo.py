@@ -1,3 +1,5 @@
+#this is leo, vertual assistant - built by Tirtharaj Sinha @tirtharajsinha
+
 import pyttsx3
 import datetime
 import speech_recognition as sr
@@ -283,6 +285,18 @@ if __name__=="__main__":
                         speak(main)
                     else:
                         speak("looks like some thing went wrong,city not found,try again")
+        elif "my" in query and "location" in query:
+            try:
+                res = requests.get("https://ipinfo.io/")
+                data = res.json()
+                ans="city :"+data["city"]+", country : "+data["country"]+", region : "+data["region"] +" and time zone :"+data["timezone"]
+            except:
+                ans="sorry ! may be something wrong has been happend,try again ."
+
+            print(ans)
+            speak(ans)
+        else:
+            speak("i didn't get that, can you say again ?")
 
 
 
