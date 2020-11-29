@@ -7,4 +7,4 @@ recommended IDE PyCharm, VS code
   <li><h3>Leo</h3></li>
   </ul>
   
-  repository licesce under <a href="#">MIT Licence</a>
+  repository licesce under <a href="https://github.com/tirtharajsinha/vertual-assistant/blob/main/LICENSE">MIT Licence</a>
