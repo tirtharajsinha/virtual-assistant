@@ -14,11 +14,15 @@ import pyjokes
 import requests
 import json
 import wolframalpha
+import pandas as pd
+import numpy as np
+import urllib.request
+import re
 # library import part ends here
 
 # variable declear part starts here
 
-browserpath="C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+browserpath="C:\Program Files\Google\Chrome\Application\chrome.exe"
 webbrowser.register('chrome',None,webbrowser.BackgroundBrowser(browserpath))
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
@@ -167,7 +171,14 @@ if __name__=="__main__":
             except Exception as e:
                 webbrowser.open("instagram.com")
             permission=input("press enter button to continue")
-        elif "play" in query and("music" in query or "song" in query):
+        elif ("personal" in query or "portfolio" in query or "my"in query) and "site" in query:
+            speak("opening Tirtharaj Sinha official.........")
+            try:
+                webbrowser.get("chrome").open("https://tirtharajsinha.github.io/webfiles/portfolio_v2.0")
+            except Exception as e:
+                webbrowser.open("https://tirtharajsinha.github.io/webfiles/portfolio_v2.0")
+            permission = input("press enter button to continue")
+        elif "play" in query and("music" in query or "song" in query) and "youtube" not in query and "open" in query:
             music_dir="F:\\direc\\chatbot music"
             songs=os.listdir(music_dir)
             music_ind=random.randint(0,len(songs)-1)
@@ -295,8 +306,66 @@ if __name__=="__main__":
 
             print(ans)
             speak(ans)
-        else:
-            speak("i didn't get that, can you say again ?")
+        elif ("project " in query) and ("folder" in query or "directory" in query or "file" in query):
+
+            df = pd.read_csv("C:/Users/PINTU SINHA/PycharmProjects/chatterbot/prj_path.csv")
+
+            prlist = df["name"].tolist()
+            mypath=""
+
+            for i in range(len(prlist)):
+                if prlist[i] in query:
+                    mypath = df.iloc[i]["path"]
+                    print("sure tirtho,  opening " + prlist[i] + " project directory")
+                    speak("sure tirtho,  opening "+prlist[i]+" project directory")
+
+                    break
+            if mypath=="":
+                speak("which project will you like to open ?")
+                pathquery=takecommand()
+                for i in range(len(prlist)):
+                    if prlist[i] in pathquery:
+                        mypath = df.iloc[i]["path"]
+                        print("sure tirtho,  opening " + prlist[i] + " project directory")
+                        speak("sure tirtho,  opening " + prlist[i] + " project directory")
+
+                        break
+
+            webbrowser.open(mypath + "//")
+        elif ("shut" in query or "turn of" in query) and ("computer" in query or "system" in query):
+            speak("are you sure, that you want to shutdown your system,please type your final decision.")
+            shut=input("Do you want to shutdown your system[y/n] : ")
+            if shut.strip().lower()=="y":
+                speak("sorry,  can't shutdown system")
+                speak("this feature is currently turned off as application is under development")
+                # speak("closing all application")
+                # speak("shutting down your system")
+                #os.system("shutdown /s /t 1")
+                #os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
+                break
+            else:
+                speak("discarding shutdown decision")
+                time.sleep(5)
+        elif "play" in query or "youtube" in query:
+            speak("which song you want to listen?")
+            rawquery = takecommand()
+            if "play" in rawquery:
+                rawquery = rawquery.split("play")[1]
+            queryl = rawquery.lower().strip().split()
+            getquery = "+".join(queryl)
+
+            if getquery !="":
+                url = "https://www.youtube.com/results?search_query=" + getquery
+                html = urllib.request.urlopen(url)
+                videoids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
+                firstresult = "https://www.youtube.com/watch?v=" + videoids[0]
+                webbrowser.open(firstresult)
+                permission=input("press enter to continue.....")
+            else:
+                speak("I haven't got proper query , please try again.")
+
+
+
 
 
 
