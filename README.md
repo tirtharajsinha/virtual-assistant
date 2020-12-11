@@ -1,7 +1,7 @@
 # vertual-assistant
 all chatbot or vertual assistant built with python.<br> 
 listed by name here.clone by https link.install by requirement.txt<br>
-do installation of above python3.7
+do installation of above python3.7 or above<br>
 recommended IDE PyCharm, VS code
 <ul>
   <li><h3>Leo</h3></li>
