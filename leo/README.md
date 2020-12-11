@@ -1,6 +1,7 @@
-# Leo<hr>
+# Leo.v0.1(Beta)<hr>
 
 <b>Leo</b> is a personal vertual assistant.<br>
+<h3> Leo is currenly under Beta stage of V.01.</h3>
 able to answer all your query.<br>
 able to find answer from web with the help of web scrapping.<br>
 <ul>
