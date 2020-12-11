@@ -1,4 +1,4 @@
-# Leo.v0.1(Beta)<hr>
+# Leo.v0.1(Beta)<hr><img src="leologo.png" height="50px" width="50px">
 
 <b>Leo</b> is a personal vertual assistant.<br>
 <h3> Leo is currenly under Beta stage of V.01.</h3>
