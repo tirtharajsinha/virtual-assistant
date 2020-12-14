@@ -1,5 +1,6 @@
-0geolocapi:collect api from google developer console and paste it here
+0geolocapi:collect api from google developer console and paste it here[* not required]
 1gmailid:paste your email address
 2gmailpass:passward of your email id
-3weatherapi:get your free api key from <a href="https://openweathermap.org/api">openweathermap.org<a> and paste it here
-4wolframalpha: collect your free api key from <a href="https://products.wolframalpha.com/api/">wolfram-alpha.com<a> and paste it here
+3weatherapi:get your free api key from "https://openweathermap.org/api" and paste it here
+4wolframalpha: collect your free api key from "https://products.wolframalpha.com/api/" and paste it here
+5newsapi:https: get api key from "https://newsapi.org/" and paste it here
