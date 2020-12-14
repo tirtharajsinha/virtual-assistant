@@ -31,6 +31,12 @@ engine.setProperty("voice",voices[0].id)
 
 
 def speak(audio):
+    engine.setProperty("voice", voices[0].id)
+    engine.setProperty('rate',170)
+    engine.say(audio)
+    engine.runAndWait()
+def speakf(audio):
+    engine.setProperty("voice", voices[1].id)
     engine.setProperty('rate',170)
     engine.say(audio)
     engine.runAndWait()
@@ -336,11 +342,11 @@ if __name__=="__main__":
             speak("are you sure, that you want to shutdown your system,please type your final decision.")
             shut=input("Do you want to shutdown your system[y/n] : ")
             if shut.strip().lower()=="y":
-                speak("sorry,  can't shutdown system")
-                speak("this feature is currently turned off as application is under development")
-                # speak("closing all application")
-                # speak("shutting down your system")
-                #os.system("shutdown /s /t 1")
+                # speak("sorry,  can't shutdown system")
+                # speak("this feature is currently turned off as application is under development")
+                speak("closing all application")
+                speak("shutting down your system")
+                os.system("shutdown /s /t 1")
                 #os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
                 break
             else:
@@ -363,8 +369,26 @@ if __name__=="__main__":
                 permission=input("press enter to continue.....")
             else:
                 speak("I haven't got proper query , please try again.")
-
-
+        elif "read" in query and "new" in query:
+            f = open("apis.txt", "r")
+            api = f.readlines()
+            app_id = api[5].split(":")[1].strip()
+            url = "http://newsapi.org/v2/top-headlines?country=in&apiKey=" + app_id
+            r = requests.get(url)
+            data = json.loads(r.content)
+            news = data["articles"]
+            speak("sure sir, reading todays fresh news.......")
+            for i in range(10):
+                print("news",i+1," : ",news[i]["title"])
+                if (i+1)%2==0:
+                    speakf(news[i]["title"])
+                    if i != 9:
+                        speakf("moving to next news.")
+                else:
+                    speak(news[i]["title"])
+                    if i != 9:
+                        speak("moving to next news.")
+            speak("that's it for now, hope you enjoyed")
 
 
 
