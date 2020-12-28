@@ -16,6 +16,12 @@ import wolframalpha
 from tkinter import *
 from threading import Thread
 import sys
+import urllib.request
+import re
+import pandas as pd
+import PIL
+from PIL import Image,ImageTk
+
 
 from tkinter import simpledialog
 from tkinter import ttk
@@ -28,6 +34,19 @@ webbrowser.register('chrome',None,webbrowser.BackgroundBrowser(browserpath))
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
 engine.setProperty("voice",voices[0].id)
+
+
+
+def speak(audio):
+    engine.setProperty("voice", voices[0].id)
+    engine.setProperty('rate',170)
+    engine.say(audio)
+    engine.runAndWait()
+def speakf(audio):
+    engine.setProperty("voice", voices[1].id)
+    engine.setProperty('rate',170)
+    engine.say(audio)
+    engine.runAndWait()
 textheight=20
 ########################
 #gui design strts here
@@ -45,10 +64,7 @@ def newline(text):
     return final
 
 
-def speak(audio):
-    engine.setProperty('rate',170)
-    engine.say(audio)
-    engine.runAndWait()
+
 def wishme():
     hour=int(datetime.datetime.now().hour)
     if hour >=0 and hour<12:
@@ -117,17 +133,17 @@ def startleo():
 
 
 
-            elif "who am i" in query or "know me" in query:
+            if "who am i" in query or "know me" in query:
                 speak(
                     "you are   tirthoraj sinha  , softwre developer ,web developer, multilanguage programmer and  creator of me.")
-            if "who are you" in query or "who is you" in query or "who you" in query or "your name" in query:
+            elif "who are you" in query or "who is you" in query or "who you" in query or "your name" in query:
                 speak(
                     "hi, This is leeo  ,Tirtho's personal assistent,    built by tirtharaj,   always here for your need")
-            if "can do" in query or "you do" in query or "your work" in query:
+            elif "can do" in query or "you do" in query or "your work" in query:
                 speak(
                     "i help tirtho in his work,    i find answer of your any relevent question and reply according to your query.")
                 speak("ask anything")
-            if "time" in query or "date" in query:
+            elif "time" in query or "date" in query:
                 t = datetime.datetime.now().strftime("%H:%M:%S")
                 ti = "it is " + t
                 d = time.asctime(time.localtime(time.time())).split()
@@ -137,11 +153,14 @@ def startleo():
                 canvas2.create_text(70, textheight, anchor=NW, text=newline(current), font="Helvetica 15 bold", fill="white")
                 textheight += 40
                 speak(current)
-            if " my brother" in query:
+            elif " my brother" in query:
                 speak(
                     "i never met your brother,jyotisko but he is well known for his foolishness,uselessness,   i also know he is called as hen")
-
-            if "search" in query or "find" in query or "solve" in query or "what" in query or "who" in query:
+            elif "repeat" in query:
+                query=query.replace("repeat","")
+                query=query.replace("me","")
+                speak(query)
+            elif "search" in query or "find" in query or "solve" in query or "what" in query or "who" in query:
 
                 query = query.replace("tell", "")
                 query = query.replace("search", "")
@@ -152,8 +171,14 @@ def startleo():
                 app_id = api[4].split(":")[1].strip()
                 f.close()
                 speak("searching......")
+
                 if query.strip() == "":
                     speak("no query found,speak again")
+                    continue
+
+                if "google" in query:
+                    query = query.replace("google", "")
+                    webbrowser.get("chrome").open("https://www.google.com/search?q=" + query)
                     continue
 
                 try:
@@ -227,7 +252,14 @@ def startleo():
                 except Exception as e:
                     webbrowser.open("instagram.com")
                 button.wait_variable(var)
-            elif "play" in query and ("music" in query or "song" in query):
+            elif ("personal" in query or "portfolio" in query or "my" in query) and "site" in query:
+                speak("opening Tirtharaj Sinha official.........")
+                try:
+                    webbrowser.get("chrome").open("https://tirtharajsinha.github.io/webfiles/portfolio_v2.0")
+                except Exception as e:
+                    webbrowser.open("https://tirtharajsinha.github.io/webfiles/portfolio_v2.0")
+                permission = input("press enter button to continue")
+            elif "play" in query and("music" in query or "song" in query) and "youtube" not in query:
                 music_dir = "F:\\direc\\chatbot music"
                 songs = os.listdir(music_dir)
                 music_ind = random.randint(0, len(songs) - 1)
@@ -318,14 +350,14 @@ def startleo():
                     speak("my pleasure")
                 else:
                     speak("i will try better next time")
-            elif "weather" in query:
+            elif "weather" in query or "temperature" in query:
 
                 if True:
                     f = open("apis.txt", "r")
                     api = f.readlines()
                     app_id = api[4].split(":")[1].strip()
                     f.close()
-                    speak("searching......")
+                    speak("fetching data......")
 
                     try:
                         client = wolframalpha.Client(app_id)
@@ -376,7 +408,109 @@ def startleo():
                                     fill="white")
                 textheight += 40
                 speak(ans)
+            elif ("project " in query) and ("folder" in query or "directory" in query or "file" in query):
 
+                df = pd.read_csv("C:/Users/PINTU SINHA/PycharmProjects/chatterbot/prj_path.csv")
+
+                prlist = df["name"].tolist()
+                mypath = ""
+
+                for i in range(len(prlist)):
+                    if prlist[i] in query:
+                        mypath = df.iloc[i]["path"]
+                        print("sure tirtho,  opening " + prlist[i] + " project directory")
+                        speak("sure tirtho,  opening " + prlist[i] + " project directory")
+                        canvas2.create_text(70, textheight, anchor=NW, text=newline("opening " + prlist[i] + " project directory"), font="Helvetica 15 bold",
+                                            fill="white")
+                        textheight += 40
+
+                        break
+                if mypath == "":
+                    speak("which project will you like to open ?")
+                    pathquery = takecommand()
+                    for i in range(len(prlist)):
+                        if prlist[i] in pathquery:
+                            mypath = df.iloc[i]["path"]
+                            print("sure tirtho,  opening " + prlist[i] + " project directory")
+                            speak("sure tirtho,  opening " + prlist[i] + " project directory")
+                            canvas2.create_text(70, textheight, anchor=NW,
+                                                text=newline("opening " + prlist[i] + " project directory"),
+                                                font="Helvetica 15 bold",
+                                                fill="white")
+                            textheight += 40
+
+                            break
+
+                webbrowser.open(mypath + "//")
+            elif ("shut" in query or "turn of" in query) and ("computer" in query or "system" in query):
+                speak("are you sure, that you want to shutdown your system,please type your final decision.")
+
+                canvas2.create_text(70, textheight, anchor=NW,
+                                    text=newline("Do you want to shutdown your system[y/n] : "),
+                                    font="Helvetica 15 bold",
+                                    fill="white")
+                textheight += 40
+                button.wait_variable(var)
+                shut = emailentry.get()
+                if shut.strip().lower() == "y":
+                    # speak("sorry,  can't shutdown system")
+                    # speak("this feature is currently turned off as application is under development")
+                    speak("closing all application")
+                    speak("shutting down your system")
+                    os.system("shutdown /s /t 1")
+                    # os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
+                    break
+                else:
+                    speak("discarding shutdown decision")
+                    time.sleep(5)
+            elif ("play" in query or "search" in query) and "youtube" in query:
+                speak("which song you want to listen?")
+                rawquery = takecommand()
+                if "play" in rawquery:
+                    rawquery = rawquery.split("play")[1]
+                queryl = rawquery.lower().strip().split()
+                getquery = "+".join(queryl)
+
+                if getquery != "":
+                    url = "https://www.youtube.com/results?search_query=" + getquery
+                    html = urllib.request.urlopen(url)
+                    videoids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
+                    firstresult = "https://www.youtube.com/watch?v=" + videoids[0]
+                    webbrowser.open(firstresult)
+                    canvas2.create_text(70, textheight, anchor=NW,
+                                        text=newline("press button below to continue...."),
+                                        font="Helvetica 15 bold",
+                                        fill="white")
+                    textheight += 40
+                    button.wait_variable(var)
+                else:
+                    speak("I haven't got proper query , please try again.")
+            elif ("read" in query or "tell" in query or "today" in query) and "new" in query:
+                f = open("apis.txt", "r")
+                api = f.readlines()
+                app_id = api[5].split(":")[1].strip()
+                url = "http://newsapi.org/v2/top-headlines?country=in&apiKey=" + app_id
+                r = requests.get(url)
+                data = json.loads(r.content)
+                news = data["articles"]
+                speak("sure sir, reading todays fresh news.......")
+                for i in range(10):
+                    print()
+                    newstxt="news"+ str(i + 1)+" : "+ news[i]["title"]
+                    canvas2.create_text(70, textheight, anchor=NW,
+                                        text=newline(newstxt),
+                                        font="Helvetica 10 bold",
+                                        fill="white")
+                    textheight += 100
+                    if (i + 1) % 2 == 0:
+                        speakf(news[i]["title"])
+                        if i != 9:
+                            speakf("moving to next news.")
+                    else:
+                        speak(news[i]["title"])
+                        if i != 9:
+                            speak("moving to next news.")
+                speak("that's it for now, hope you enjoyed")
 
 
 def start():
@@ -392,18 +526,23 @@ def start():
 if __name__=="__main__":
     root=Tk()
     root.title("Leo - Personal assistant")
-    root.geometry("600x800")
+    root.geometry("1000x800")
     root.configure(background="white")
-
-    frame=Frame(root,width=570,height=760)
-    frame.place(x=0,y=10)
+    f1=Frame(root,width=400,height=760,bg="green")
+    f1.pack(side=LEFT)
+    image = Image.open("leointerface.jpg")
+    photo = ImageTk.PhotoImage(image)
+    labimg1 = Label(f1,image=photo)
+    labimg1.pack()
+    frame=Frame(root,width=570,height=720)
+    frame.pack(side=RIGHT)
     var = IntVar()
-    emailentry = Entry(root, textvariable=StringVar(),width=300,bg="cyan",fg="black")
-    emailentry.place(x=10,y=770)
+    emailentry = Entry(root, textvariable=StringVar(),bg="black",fg="white",font=('Verdana',15))
+    emailentry.place(x=410,y=730,height=50,width=520)
     button = Button(root, text="Click Me", command=lambda: var.set(1))
-    button.place(x=510,y=770)
+    button.place(x=920,y=730,height=50,width=60)
 
-    canvas2=Canvas(frame,bg="black",width=570,height=760,scrollregion=(0,0,580,4000))
+    canvas2=Canvas(frame,bg="goldenrod2",width=570,height=720,scrollregion=(0,0,580,4000))
     vbar=Scrollbar(frame,orient=VERTICAL)
     vbar.pack(side=RIGHT,fill=Y)
     vbar.config(command=canvas2.yview)

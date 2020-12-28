@@ -55,7 +55,7 @@ def takecommand():
     r=sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening....")
-        r.pause_threshold=1
+        r.pause_threshold=.6
         r.energy_threshold = 200
         audio=r.listen(source)
     try:
@@ -90,14 +90,14 @@ if __name__=="__main__":
         elif "by" in query or "stop" in query or "goodbye" in query or "buy" in query or "bye" in query:
             speak("goodbuy,   see you later")
             break
-        elif "who am i" in query or "know me" in query:
+        if "who am i" in query or "know me" in query:
             speak("you are   tirthoraj sinha  , softwre developer ,web developer, multilanguage programmer and  creator of me.")
-        if "who are you" in query or "who is you" in query or "who you" in query or "your name" in query:
+        elif "who are you" in query or "who is you" in query or "who you" in query or "your name" in query:
             speak("hi, This is leeo  ,Tirtho's personal assistent,    built by tirtharaj,   always here for your need")
-        if  "can do" in query or "you do" in query or "your work" in query:
+        elif  "can do" in query or "you do" in query or "your work" in query:
             speak("i help tirtho in his work,    i find answer of your any relevent question and reply according to your query.")
             speak("ask anything")
-        if "time" in query or "date" in query:
+        elif "time" in query or "date" in query:
             t = datetime.datetime.now().strftime("%H:%M:%S")
             ti = "it is " + t
             d = time.asctime(time.localtime(time.time())).split()
@@ -105,11 +105,11 @@ if __name__=="__main__":
             current = ti + date
             print(current)
             speak(current)
-        if " my brother" in query:
+        elif " my brother" in query:
             speak("i never met your brother,jyotisko but he is well known for his foolishness,uselessness,   i also know he is called as hen")
 
 
-        if "search" in query or "find" in query or "solve" in query:
+        elif "search" in query or "find" in query or "solve" in query:
 
             query=query.replace("tell","")
             query = query.replace("search", "")
@@ -123,7 +123,10 @@ if __name__=="__main__":
             if query.strip()=="":
                 speak("no query found,speak again")
                 continue
-
+            if "google" in query:
+                query = query.replace("google", "")
+                webbrowser.get("chrome").open("https://www.google.com/search?q="+query)
+                continue
             try:
                 client = wolframalpha.Client(app_id)
                 res = client.query(query)
@@ -184,7 +187,7 @@ if __name__=="__main__":
             except Exception as e:
                 webbrowser.open("https://tirtharajsinha.github.io/webfiles/portfolio_v2.0")
             permission = input("press enter button to continue")
-        elif "play" in query and("music" in query or "song" in query) and "youtube" not in query and "open" in query:
+        elif "play" in query and("music" in query or "song" in query) and "youtube" not in query:
             music_dir="F:\\direc\\chatbot music"
             songs=os.listdir(music_dir)
             music_ind=random.randint(0,len(songs)-1)
@@ -352,7 +355,7 @@ if __name__=="__main__":
             else:
                 speak("discarding shutdown decision")
                 time.sleep(5)
-        elif "play" in query or "youtube" in query:
+        elif ("play" in query or "search" in query) and "youtube" in query:
             speak("which song you want to listen?")
             rawquery = takecommand()
             if "play" in rawquery:
@@ -369,7 +372,7 @@ if __name__=="__main__":
                 permission=input("press enter to continue.....")
             else:
                 speak("I haven't got proper query , please try again.")
-        elif "read" in query and "new" in query:
+        elif ("read" in query or "tell" in query or "today" in query)and "new" in query:
             f = open("apis.txt", "r")
             api = f.readlines()
             app_id = api[5].split(":")[1].strip()
