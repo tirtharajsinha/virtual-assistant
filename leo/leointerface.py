@@ -1,3 +1,4 @@
+#################### library import ##################
 
 import pyttsx3
 import datetime
@@ -21,16 +22,20 @@ import re
 import pandas as pd
 import PIL
 from PIL import Image,ImageTk
-
-
 from tkinter import simpledialog
 from tkinter import ttk
+
 # library import part ends here
-
-# variable declear part starts here
-
+############################################
+############# variable declaration #########
+############################################
+textheight=20
 browserpath="C:\Program Files\Google\Chrome\Application\chrome.exe"
 webbrowser.register('chrome',None,webbrowser.BackgroundBrowser(browserpath))
+#########################################
+########### SPEAKING ENGINE #############
+#########################################
+
 engine = pyttsx3.init('sapi5')
 voices = engine.getProperty('voices')
 engine.setProperty("voice",voices[0].id)
@@ -47,14 +52,14 @@ def speakf(audio):
     engine.setProperty('rate',170)
     engine.say(audio)
     engine.runAndWait()
-textheight=20
-########################
-#gui design strts here
 
-
-
+################################################
+################# SUPPORTING FUNCTIONS #########
+################################################
 
 def newline(text):
+    # align builder for text
+    # any text before printing on gui canvas passes from here
     final=""
     for i in range(len(text)):
         final+=text[i]
@@ -62,10 +67,15 @@ def newline(text):
             final+="\n"
 
     return final
-
+def write(text):
+    # write test on canvas on gui
+    global textheight
+    canvas2.create_text(70, textheight, anchor=NW, text=newline(text), font="Helvetica 10 bold", fill="white")
+    textheight += 40
 
 
 def wishme():
+    # starter function
     hour=int(datetime.datetime.now().hour)
     if hour >=0 and hour<12:
         speak("good morning tirtho")
@@ -74,6 +84,10 @@ def wishme():
     else:
         speak("good Evening tirtho")
     speak("This is leeo,Your personal helping hand,   how may i help you ?")
+
+###################################################################
+##################### SPEAK RECOGNITION fucntion ##################
+###################################################################
 
 def takecommand():
     global textheight
@@ -107,8 +121,9 @@ def takecommand():
     return query
 
 #main conditional part starts here
-
-
+####################################################|
+############### MAIN APPLICATION ###################|
+####################################################|
 
 def startleo():
     global textheight
@@ -410,7 +425,7 @@ def startleo():
                 speak(ans)
             elif ("project " in query) and ("folder" in query or "directory" in query or "file" in query):
 
-                df = pd.read_csv("C:/Users/PINTU SINHA/PycharmProjects/chatterbot/prj_path.csv")
+                df = pd.read_csv("prj_path.csv")
 
                 prlist = df["name"].tolist()
                 mypath = ""
@@ -428,6 +443,14 @@ def startleo():
                 if mypath == "":
                     speak("which project will you like to open ?")
                     pathquery = takecommand()
+                    if "project name" in pathquery or "which" in pathquery or "forgot" in pathquery:
+                        prjstr=", ".join(prlist)
+                        speak("you have not remembered your own projects, ha ha ha")
+                        speak("jokes apart, your projects are"+prjstr)
+                        write(prjstr)
+                        speak("which project do you want to open?")
+                        pathquery=takecommand()
+
                     for i in range(len(prlist)):
                         if prlist[i] in pathquery:
                             mypath = df.iloc[i]["path"]
@@ -438,10 +461,16 @@ def startleo():
                                                 font="Helvetica 15 bold",
                                                 fill="white")
                             textheight += 40
-
                             break
 
-                webbrowser.open(mypath + "//")
+
+                if mypath=="":
+                    mypath = df.iloc[-1]["path"]
+                try:
+                    webbrowser.open(mypath + "//")
+                except:
+                    speak("i have not gotten any project name")
+                    break
             elif ("shut" in query or "turn of" in query) and ("computer" in query or "system" in query):
                 speak("are you sure, that you want to shutdown your system,please type your final decision.")
 
@@ -512,15 +541,22 @@ def startleo():
                             speak("moving to next news.")
                 speak("that's it for now, hope you enjoyed")
 
+#application build ends here
 
+######################################################
+################# application driver #################
+######################################################
 def start():
     startleo()
     canvas2.create_text(40, textheight, anchor=NW, text="............  Leo Stopped .............", font="Helvetica 15 bold",
                         fill="white")
     print("leo stopped")
 
+#||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+#|||||||||||||||||||| GUI DESIGN PORTION ||||||||||||||||
+#||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-
+#gui design strts here
 
 
 if __name__=="__main__":
