@@ -1,8 +1,8 @@
-# Leo.v1.2(Beta)<hr><img src="leologo.png" height="100px" width="100px">
+# Leo.v1.2-beta.2<hr><img src="leologo.png" height="100px" width="100px">
 
 <b>Leo</b> is a personal virtual assistant.<br>
-<h3> Leo.py is currenly under Beta stage of V.03.</h3>
-<h3> Leo.py 's GUI version leointerface.py is currenly under Beta stage of V.02.</h3
+<h3> Leo.py is currenly under Beta.2 stage of V.03.</h3>
+<h3> Leo.py 's GUI version leointerface.py is currenly under Beta.2 stage of V.02.</h3
 able to answer all your query.<br>
 able to find answer from web with the help of web scrapping.<br>
 <ul>
