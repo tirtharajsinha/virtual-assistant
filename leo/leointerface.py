@@ -32,6 +32,7 @@ from PIL import Image, ImageTk
 ############################################
 textheight = 20
 browserpath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+browsername="chrome"
 music_dir = "D:\\direc\\chatbot music"
 codeblockpath = "C:\Program Files (x86)\CodeBlocks\codeblocks.exe"
 vscodepath = "C:\\Users\\PINTU SINHA\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
@@ -41,7 +42,7 @@ customapps = {
     "intellijidea": "C:\\Program Files\\JetBrains\\PyCharm Community Edition 2020.1.2\\bin\\pycharm64.exe"
 }
 
-webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(browserpath))
+webbrowser.register(browsername, None, webbrowser.BackgroundBrowser(browserpath))
 #########################################
 ########### SPEAKING ENGINE #############
 #########################################
