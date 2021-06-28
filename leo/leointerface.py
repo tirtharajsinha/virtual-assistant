@@ -16,42 +16,53 @@ import json
 import wolframalpha
 from tkinter import *
 from threading import Thread
-import sys
+# import sys
 import urllib.request
 import re
 import pandas as pd
-import PIL
-from PIL import Image,ImageTk
-from tkinter import simpledialog
-from tkinter import ttk
+# import PIL
+from PIL import Image, ImageTk
+
+# from tkinter import simpledialog
+# from tkinter import ttk
 
 # library import part ends here
 ############################################
 ############# variable declaration #########
 ############################################
-textheight=20
-browserpath="C:\Program Files\Google\Chrome\Application\chrome.exe"
-webbrowser.register('chrome',None,webbrowser.BackgroundBrowser(browserpath))
+textheight = 20
+browserpath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+music_dir = "D:\\direc\\chatbot music"
+codeblockpath = "C:\Program Files (x86)\CodeBlocks\codeblocks.exe"
+vscodepath = "C:\\Users\\PINTU SINHA\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
+pycharmpath = "C:\\Program Files\\JetBrains\\PyCharm Community Edition 2020.1.2\\bin\\pycharm64.exe"
+atompath = "C:\\Users\\PINTU SINHA\\AppData\\Local\\atom\\atom.exe"
+customapps = {
+    "intellijidea": "C:\\Program Files\\JetBrains\\PyCharm Community Edition 2020.1.2\\bin\\pycharm64.exe"
+}
+
+webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(browserpath))
 #########################################
 ########### SPEAKING ENGINE #############
 #########################################
 
-engine = pyttsx3.init('sapi5')
+engine = pyttsx3.init()
 voices = engine.getProperty('voices')
-engine.setProperty("voice",voices[0].id)
-
 
 
 def speak(audio):
     engine.setProperty("voice", voices[0].id)
-    engine.setProperty('rate',170)
+    engine.setProperty('rate', 170)
     engine.say(audio)
     engine.runAndWait()
+
+
 def speakf(audio):
     engine.setProperty("voice", voices[1].id)
-    engine.setProperty('rate',170)
+    engine.setProperty('rate', 170)
     engine.say(audio)
     engine.runAndWait()
+
 
 ################################################
 ################# SUPPORTING FUNCTIONS #########
@@ -60,30 +71,37 @@ def speakf(audio):
 def newline(text):
     # align builder for text
     # any text before printing on gui canvas passes from here
-    final=""
+    final = ""
+    linecount = 0
     for i in range(len(text)):
-        final+=text[i]
-        if i%20==0 and i!=0:
-            final+="\n"
+        final += text[i]
+        if i % 20 == 0 and i != 0:
+            final += "\n"
+            linecount += 1
 
     return final
-def write(text):
+
+
+def write(text, size=10):
     # write test on canvas on gui
+
     global textheight
-    canvas2.create_text(70, textheight, anchor=NW, text=newline(text), font="Helvetica 10 bold", fill="white")
-    textheight += 40
+    size = str(size)
+    canvas2.create_text(70, textheight, anchor=NW, text=newline(text), font="Helvetica " + size + " bold", fill="white")
+    textheight += (len(text) // 20) * 20
 
 
 def wishme():
     # starter function
-    hour=int(datetime.datetime.now().hour)
-    if hour >=0 and hour<12:
+    hour = int(datetime.datetime.now().hour)
+    if hour >= 0 and hour < 12:
         speak("good morning tirtho")
-    elif hour>12 and hour<18:
+    elif hour > 12 and hour < 18:
         speak("good afternoon tirtho!!")
     else:
         speak("good Evening tirtho")
     speak("This is leeo,Your personal helping hand,   how may i help you ?")
+
 
 ###################################################################
 ##################### SPEAK RECOGNITION fucntion ##################
@@ -91,20 +109,19 @@ def wishme():
 
 def takecommand():
     global textheight
-    #it will take mic input from user and return command as string
-    r=sr.Recognizer()
+    # it will take mic input from user and return command as string
+    r = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening....")
-        canvas2.create_text(70,textheight,anchor=NW,text="Listening.....",font="Helvetica 15 bold", fill="white")
-        textheight+=40
-        r.pause_threshold=1
+        canvas2.create_text(70, textheight, anchor=NW, text="Listening.....", font="Helvetica 15 bold", fill="white")
+        textheight += 40
+        r.pause_threshold = .6
         r.energy_threshold = 200
-        audio=r.listen(source)
+        audio = r.listen(source)
     try:
         print("Recognising....")
 
-
-        query=r.recognize_google(audio,language="en-in")
+        query = r.recognize_google(audio, language="en-in")
         print(f"You said..... {query}\n")
 
         canvas2.create_text(350, textheight, anchor=NW, text=newline(query), font="Helvetica 15 bold", fill="white")
@@ -114,24 +131,34 @@ def takecommand():
     except Exception as e:
         # print(e)
         print("please,say that again.......")
-        canvas2.create_text(70, textheight, anchor=NW, text="please,say that again.......", font="Helvetica 15 bold", fill="green")
+        canvas2.create_text(70, textheight, anchor=NW, text="please,say that again.......", font="Helvetica 15 bold",
+                            fill="green")
         textheight += 40
 
         return "NONE"
     return query
 
-#main conditional part starts here
+
+# main conditional part starts here
 ####################################################|
 ############### MAIN APPLICATION ###################|
 ####################################################|
 
-def startleo():
+def startleo(con=True):
     global textheight
     wishlist = ["hi", "hello", "good morning", "good evening", "good night", "hey"]
 
     if __name__ == "__main__":
         wishme()
         while (True):
+            if (con == False):
+                canvas2.create_text(70, textheight, anchor=NW, text=newline("you are not connected"),
+                                    font="Helvetica 15 bold",
+                                    fill="white")
+                textheight += 40
+                speak("Looks like you are not connected to internet,")
+                speakf("as you are connected let me know.     bye for now.")
+                break
             query = takecommand().lower()
             query = query.replace("leo", "")
             wishele = [ele for ele in wishlist if (ele in query)]
@@ -145,8 +172,6 @@ def startleo():
             elif "by" in query or "stop" in query or "goodbye" in query or "buy" in query or "bye" in query:
                 speak("goodbuy,   see you later")
                 break
-
-
 
             if "who am i" in query or "know me" in query:
                 speak(
@@ -165,15 +190,19 @@ def startleo():
                 date = " and date is " + d[0] + " " + d[1] + " " + d[2]
                 current = ti + date
                 print(current)
-                canvas2.create_text(70, textheight, anchor=NW, text=newline(current), font="Helvetica 15 bold", fill="white")
+                canvas2.create_text(70, textheight, anchor=NW, text=newline(current), font="Helvetica 15 bold",
+                                    fill="white")
                 textheight += 40
                 speak(current)
+            elif ("computer" in query or "system" in query) and "name" in query:
+                speak("yes tirtho, you are using hp envy 13 x 360 ")
+
             elif " my brother" in query:
                 speak(
                     "i never met your brother,jyotisko but he is well known for his foolishness,uselessness,   i also know he is called as hen")
             elif "repeat" in query:
-                query=query.replace("repeat","")
-                query=query.replace("me","")
+                query = query.replace("repeat", "")
+                query = query.replace("me", "")
                 speak(query)
             elif "search" in query or "find" in query or "solve" in query or "what" in query or "who" in query:
 
@@ -202,16 +231,14 @@ def startleo():
                     result = next(res.results).text
                     speak("got it")
                     print(query, "\n", result)
-                    canvas2.create_text(70, textheight, anchor=NW, text=newline(result), font="Helvetica 15 bold", fill="white")
-                    textheight += 200
+                    write(result)
                     speak("according to web search      ")
                     speak(result)
                 except Exception:
                     try:
                         result = wiki.summary(query, sentences=2)
                         print(query, "\n", result)
-                        canvas2.create_text(70, textheight, anchor=NW, text=newline(result), font="Helvetica 15 bold",fill="white")
-                        textheight += 200
+                        write(result)
                         speak("according to wikipedia  ")
                         speak(result)
                         pass
@@ -235,7 +262,8 @@ def startleo():
             elif "open" in query and "google" in query:
                 speak("opening google....")
                 print("opening google.....")
-                canvas2.create_text(70, textheight, anchor=NW, text="opening google.....", font="Helvetica 15 bold", fill="white")
+                canvas2.create_text(70, textheight, anchor=NW, text="opening google.....", font="Helvetica 15 bold",
+                                    fill="white")
                 textheight += 40
                 try:
 
@@ -273,35 +301,46 @@ def startleo():
                     webbrowser.get("chrome").open("https://tirtharajsinha.github.io/webfiles/portfolio_v2.0")
                 except Exception as e:
                     webbrowser.open("https://tirtharajsinha.github.io/webfiles/portfolio_v2.0")
-                permission = input("press enter button to continue")
-            elif "play" in query and("music" in query or "song" in query) and "youtube" not in query:
-                music_dir = "F:\\direc\\chatbot music"
+                button.wait_variable(var)
+            elif "play" in query and ("music" in query or "song" in query) and "youtube" not in query:
+
                 songs = os.listdir(music_dir)
                 music_ind = random.randint(0, len(songs) - 1)
                 speak("sure tirtho,  playing music...." + songs[music_ind][:-4])
                 os.startfile(os.path.join(music_dir, songs[music_ind]))
 
                 button.wait_variable(var)
-            elif "codeblock" in query or "c compiler" in query or "blocks" in query:
-                apppath = "C:\Program Files (x86)\CodeBlocks\codeblocks.exe"
-                os.startfile(apppath)
-                speak("sure sir,    launching codeblocks....")
-                button.wait_variable(var)
-            elif "visual studio code" in query or "code" in query:
-                apppath = "C:\\Users\\PINTU SINHA\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
-                os.startfile(apppath)
-                speak("sure sir,    launching visual studio code....")
-                button.wait_variable(var)
-            elif "pycharm" in query or "python" in query:
-                apppath = "C:\\Program Files\\JetBrains\\PyCharm Community Edition 2020.1.2\\bin\\pycharm64.exe"
-                os.startfile(apppath)
-                speak("sure sir,    launching pycharm....")
-                button.wait_variable(var)
-            elif "atom" in query:
-                apppath = "C:\\Users\\PINTU SINHA\\AppData\\Local\\atom\\atom.exe"
-                os.startfile(apppath)
-                speak("sure sir,    launching atom text editor....")
-                button.wait_variable(var)
+            if "app" in query and ("open" in query or "start" in query):
+                if "codeblock" in query or "c compiler" in query or "blocks" in query:
+                    os.startfile(codeblockpath)
+                    speak("sure sir,    launching codeblocks....")
+                    button.wait_variable(var)
+                elif "visual studio code" in query or "code" in query:
+
+                    os.startfile(vscodepath)
+                    speak("sure sir,    launching visual studio code....")
+                    button.wait_variable(var)
+                elif "pycharm" in query or "python" in query:
+
+                    os.startfile(pycharmpath)
+                    speak("sure sir,    launching pycharm....")
+                    button.wait_variable(var)
+                elif "atom" in query:
+
+                    os.startfile(atompath)
+                    speak("sure sir,    launching atom text editor....")
+                    button.wait_variable(var)
+                else:
+                    appname = -1
+                    for app in customapps.keys():
+                        if app in query:
+                            appname = app
+                    if appname == -1:
+                        speak("application not found")
+                    else:
+                        os.startfile(customapps[appname])
+                        speak("sure sir,    launching "+appname)
+                        button.wait_variable(var)
             elif "send" in query and "mail" in query:
                 speak("mail wizerd is on")
 
@@ -311,7 +350,8 @@ def startleo():
                 passward = api[2].split(":")[1]
                 f.close()
                 speak("Enter the mail whom you want to send mail")
-                canvas2.create_text(70, textheight, anchor=NW, text="Enter the mail whom you want to \nsend mail below text box",
+                canvas2.create_text(70, textheight, anchor=NW,
+                                    text="Enter the mail whom you want to \nsend mail below text box",
                                     font="Helvetica 15 bold", fill="white")
                 button.wait_variable(var)
                 reciver = emailentry.get()
@@ -423,7 +463,7 @@ def startleo():
                                     fill="white")
                 textheight += 40
                 speak(ans)
-            elif ("project " in query) and ("folder" in query or "directory" in query or "file" in query):
+            elif "project " in query:
 
                 df = pd.read_csv("prj_path.csv")
 
@@ -435,7 +475,9 @@ def startleo():
                         mypath = df.iloc[i]["path"]
                         print("sure tirtho,  opening " + prlist[i] + " project directory")
                         speak("sure tirtho,  opening " + prlist[i] + " project directory")
-                        canvas2.create_text(70, textheight, anchor=NW, text=newline("opening " + prlist[i] + " project directory"), font="Helvetica 15 bold",
+                        canvas2.create_text(70, textheight, anchor=NW,
+                                            text=newline("opening " + prlist[i] + " project directory"),
+                                            font="Helvetica 15 bold",
                                             fill="white")
                         textheight += 40
 
@@ -444,12 +486,12 @@ def startleo():
                     speak("which project will you like to open ?")
                     pathquery = takecommand()
                     if "project name" in pathquery or "which" in pathquery or "forgot" in pathquery:
-                        prjstr=", ".join(prlist)
+                        prjstr = ", ".join(prlist)
                         speak("you have not remembered your own projects, ha ha ha")
-                        speak("jokes apart, your projects are"+prjstr)
+                        speak("jokes apart, your projects are" + prjstr)
                         write(prjstr)
                         speak("which project do you want to open?")
-                        pathquery=takecommand()
+                        pathquery = takecommand()
 
                     for i in range(len(prlist)):
                         if prlist[i] in pathquery:
@@ -463,8 +505,7 @@ def startleo():
                             textheight += 40
                             break
 
-
-                if mypath=="":
+                if mypath == "":
                     mypath = df.iloc[-1]["path"]
                 try:
                     webbrowser.open(mypath + "//")
@@ -525,7 +566,7 @@ def startleo():
                 speak("sure sir, reading todays fresh news.......")
                 for i in range(10):
                     print()
-                    newstxt="news"+ str(i + 1)+" : "+ news[i]["title"]
+                    newstxt = "news" + str(i + 1) + " : " + news[i]["title"]
                     canvas2.create_text(70, textheight, anchor=NW,
                                         text=newline(newstxt),
                                         font="Helvetica 10 bold",
@@ -541,51 +582,65 @@ def startleo():
                             speak("moving to next news.")
                 speak("that's it for now, hope you enjoyed")
 
-#application build ends here
+
+# application build ends here
 
 ######################################################
 ################# application driver #################
 ######################################################
 def start():
-    startleo()
-    canvas2.create_text(40, textheight, anchor=NW, text="............  Leo Stopped .............", font="Helvetica 15 bold",
+    url = "https://www.google.com"
+    try:
+        res = requests.get(url)
+        startleo()
+    except:
+        startleo(con=False)
+    canvas2.create_text(40, textheight, anchor=NW, text="............  Leo Stopped .............",
+                        font="Helvetica 15 bold",
                         fill="white")
     print("leo stopped")
 
-#||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-#|||||||||||||||||||| GUI DESIGN PORTION ||||||||||||||||
-#||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-#gui design strts here
+# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+# |||||||||||||||||||| GUI DESIGN PORTION ||||||||||||||||
+# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+# gui design strts here
 
 
-if __name__=="__main__":
-    root=Tk()
+if __name__ == "__main__":
+    root = Tk()
+    icn = PhotoImage(file="logo.png")
+    root.iconphoto(False, icn)
     root.title("Leo - Personal assistant")
     root.geometry("1000x800")
+    root.minsize(width=1000, height=800)
+    root.maxsize(width=1000, height=800)
     root.configure(background="white")
-    f1=Frame(root,width=400,height=760,bg="green")
+    f1 = Frame(root, width=400, height=760, bg="green")
     f1.pack(side=LEFT)
     image = Image.open("leointerface.jpg")
     photo = ImageTk.PhotoImage(image)
-    labimg1 = Label(f1,image=photo)
+    labimg1 = Label(f1, image=photo)
     labimg1.pack()
-    frame=Frame(root,width=570,height=720)
+    frame = Frame(root, width=570, height=720)
     frame.pack(side=RIGHT)
     var = IntVar()
-    emailentry = Entry(root, textvariable=StringVar(),bg="black",fg="white",font=('Verdana',15))
-    emailentry.place(x=410,y=730,height=50,width=520)
+    emailentry = Entry(root, textvariable=StringVar(), bg="black", fg="white", font=('Verdana', 15))
+    emailentry.place(x=410, y=730, height=50, width=520)
     button = Button(root, text="Click Me", command=lambda: var.set(1))
-    button.place(x=920,y=730,height=50,width=60)
+    button.place(x=920, y=730, height=50, width=60)
 
-    canvas2=Canvas(frame,bg="goldenrod2",width=570,height=720,scrollregion=(0,0,580,4000))
-    vbar=Scrollbar(frame,orient=VERTICAL)
-    vbar.pack(side=RIGHT,fill=Y)
+    canvas2 = Canvas(frame, bg="goldenrod2", width=570, height=720, scrollregion=(0, 0, 580, 4000))
+    vbar = Scrollbar(frame, orient=VERTICAL)
+    vbar.pack(side=RIGHT, fill=Y)
     vbar.config(command=canvas2.yview)
     canvas2.config(yscrollcommand=vbar.set)
-    canvas2.pack(expand=True,fill=BOTH)
-    task=Thread(target=start)
+    canvas2.pack(expand=True, fill=BOTH)
+    task = Thread(target=start)
     task.start()
     root.mainloop()
 
-
+    
+# simple talking bot built with python
+# by Tirtharaj Sinha
