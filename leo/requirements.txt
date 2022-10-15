@@ -83,7 +83,7 @@ pyinstaller-hooks-contrib==2020.10
 pyjokes==0.6.0
 pyjsparser==2.7.1
 pyparsing==2.4.7
-PyPDF2==1.26.0
+PyPDF2==1.27.5
 pypiwin32==223
 PyPrind==2.11.2
 pyrsistent==0.17.3
